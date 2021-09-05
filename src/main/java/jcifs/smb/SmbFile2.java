@@ -15,6 +15,7 @@ import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jcifs.CIFSContext;
 import jcifs.io.CopyStreamProcessListener;
 
 public class SmbFile2 extends SmbFile {
@@ -43,28 +44,9 @@ public class SmbFile2 extends SmbFile {
 	protected long restartOffset = 0;
 
 	public SmbFile2(String url) throws MalformedURLException {
-		super(url);
+		super(url, CIFSContext tc );
 	}
-	
-	public SmbFile2(String url,SmbFile2Config config) throws MalformedURLException {
-		super(url);
-		//拷贝初始参数
-		copy(this,config);
-	}
-
-	public SmbFile2(URL url) {
-		super(url);
-	}
-
-	public SmbFile2( String url, NtlmPasswordAuthentication auth ) throws MalformedURLException {
-		super(url, auth);
-	}
-	
-	public SmbFile2(String url, NtlmPasswordAuthentication auth ,SmbFile2Config config) throws MalformedURLException {
-		super(url, auth);
-		//拷贝初始参数
-		copy(this,config);
-	}
+	 
 	
 	public SmbFile2(SmbFile2 context, String name) throws MalformedURLException, UnknownHostException {
 		super(context, name);
