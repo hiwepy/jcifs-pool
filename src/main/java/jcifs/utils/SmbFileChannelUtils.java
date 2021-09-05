@@ -11,7 +11,7 @@ import org.apache.commons.io.IOUtils;
 import jcifs.io.CopyStreamProcessListener;
 import jcifs.smb1.SmbFile1;
 
-public class SmbFileChannelUtils extends SMBStreamUtils {
+public class SmbFileChannelUtils extends SmbFile1StreamUtils {
     
 	public static boolean copyLarge(FileChannel inChannel,OutputStream output, SmbFile1 sharedFile) throws IOException{
 		ByteBuffer byteBuffer = null;

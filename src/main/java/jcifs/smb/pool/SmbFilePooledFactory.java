@@ -1,44 +1,45 @@
 package jcifs.smb.pool;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import jcifs.smb.SmbFile2;
-import jcifs.smb.SmbFile2Builder;
+import jcifs.context.BaseContext;
+import jcifs.smb.SmbFile;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author 		： <a href="https://github.com/hiwepy">hiwepy</a>
  */
-public class SmbFilePooledFactory extends BasePooledObjectFactory<SmbFile2> {
+@Slf4j
+public class SmbFilePooledFactory extends BasePooledObjectFactory<SmbFile> {
 
-	protected static Logger LOG = LoggerFactory.getLogger(SmbFilePooledFactory.class);
 	protected final AtomicLong atomicLongCount;
-	protected SmbFile2Builder clientBuilder;
+	protected BaseContext baseContext;
+	protected String rootPath;
 	
-	public SmbFilePooledFactory(SmbFile2Builder clientBuilder ) {
+	public SmbFilePooledFactory(BaseContext baseContext) {
 		this.atomicLongCount = new AtomicLong();
-		this.clientBuilder = clientBuilder;
+		this.baseContext = baseContext;
 	}
-
+	
 	/**
 	 * 创建一个新对象;当对象池中的对象个数不足时,将会使用此方法来"输出"一个新的"对象",并交付给对象池管理
 	 */
 	@Override
-	public SmbFile2 create() throws Exception {
-		SmbFile2 smbClient = clientBuilder.build();
+	public SmbFile create() throws Exception {
+		SmbFile smbFile = new SmbFile(baseContext.get(null), rootPath);
 		// 记录数加1
-		LOG.info(" SMBClient 创建成功，当前线程池中有SMBClient对象" + atomicLongCount.incrementAndGet() + "个!");
-		return smbClient;
+		log.info(" SmbFile 创建成功，当前线程池中有SMBClient对象" + atomicLongCount.incrementAndGet() + "个!");
+		return smbFile;
 	}
 
 	@Override
-	public PooledObject<SmbFile2> wrap(SmbFile2 SMBClient) {
-		return new DefaultPooledObject<SmbFile2>(SMBClient);
+	public PooledObject<SmbFile> wrap(SmbFile SMBClient) {
+		return new DefaultPooledObject<SmbFile>(SMBClient);
 	}
 
 	/**
@@ -48,14 +49,14 @@ public class SmbFilePooledFactory extends BasePooledObjectFactory<SmbFile2> {
 	 * ;如果object是socket操作,那么此时socket必须关闭;如果object是文件流操作,那么此时"数据flush"且正常关闭.
 	 */
 	@Override
-	public void destroyObject(PooledObject<SmbFile2> poolObject) throws Exception {
+	public void destroyObject(PooledObject<SmbFile> poolObject) throws Exception {
 		//FTP客户端  
-		SmbFile2 smbClient = poolObject.getObject();
-		if (smbClient != null) {
-			//SMBConnectUtils.releaseConnect(smbClient);
+		SmbFile smbFile = poolObject.getObject();
+		if(Objects.nonNull(smbFile)) {
+			smbFile.close();
 		}
 		// 记录数减1
-		LOG.info(" SMBClient 销毁成功，当前线程池中有SMBClient对象" + atomicLongCount.decrementAndGet() + "个!");
+		log.info(" SmbFile 销毁成功，当前线程池中有SMBClient对象" + atomicLongCount.decrementAndGet() + "个!");
 	}
 
 	/**
@@ -67,14 +68,10 @@ public class SmbFilePooledFactory extends BasePooledObjectFactory<SmbFile2> {
 	 * ;如果对象是Socket,那么它的有效性就是socket的通道是否畅通/阻塞是否超时等.
 	 */
 	@Override
-	public boolean validateObject(PooledObject<SmbFile2> poolObject) {
-		//FTP客户端  
-		SmbFile2 smbClient = poolObject.getObject();
-		if (smbClient != null) {
-			
+	public boolean validateObject(PooledObject<SmbFile> poolObject) {
+		SmbFile smbFile = poolObject.getObject();
+		if(Objects.nonNull(smbFile)) {
 		}
-		//验证连接的有效性
-		//return SMBConnectUtils.validateConnect(smbClient);
 		return true;
 	}
 
@@ -85,12 +82,10 @@ public class SmbFilePooledFactory extends BasePooledObjectFactory<SmbFile2> {
 	 * ;如果object是一个socket,那么可以在"激活操作"中刷新通道,或者对socket进行链接重建(假如socket意外关闭)等.
 	 */
 	@Override
-	public void activateObject(PooledObject<SmbFile2> poolObject) throws Exception {
-		//FTP客户端  
-		SmbFile2 smbClient = poolObject.getObject();
-		if (smbClient != null) {
-			//尝试连接 ;SmbFile的connect()方法可以尝试连接远程文件夹，如果账号或密码错误，将抛出连接异常
-        	smbClient.connect();
+	public void activateObject(PooledObject<SmbFile> poolObject) throws Exception {
+		SmbFile smbFile = poolObject.getObject();
+		if(Objects.nonNull(smbFile)) {
+        	smbFile.connect();  // 尝试连接 ; SmbFile的connect()方法可以尝试连接远程文件夹，如果账号或密码错误，将抛出连接异常
 		}
 	}
 
@@ -102,7 +97,7 @@ public class SmbFilePooledFactory extends BasePooledObjectFactory<SmbFile2> {
 	 * .需要注意的时,activateObject和passivateObject两个方法需要对应,避免死锁或者"对象"状态的混乱.
 	 */
 	@Override
-	public void passivateObject(PooledObject<SmbFile2> poolObject) throws Exception {
+	public void passivateObject(PooledObject<SmbFile> poolObject) throws Exception {
 		
 	}
 	 

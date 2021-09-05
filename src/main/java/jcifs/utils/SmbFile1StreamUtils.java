@@ -21,17 +21,17 @@ import jcifs.io.CopyStreamProcessListener;
 import jcifs.smb1.SmbFile1;
 import jcifs.smb1.smb1.SmbFile;
 
-public class SMBStreamUtils {
+public class SmbFile1StreamUtils {
 	
 	/**
      * Constant used to indicate the stream size is unknown.
      */
     public static final long UNKNOWN_STREAM_SIZE = -1;
     
-    protected static Logger LOG = LoggerFactory.getLogger(SMBStreamUtils.class);
+    protected static Logger LOG = LoggerFactory.getLogger(SmbFile1StreamUtils.class);
 	
     public static long copyLarge(SmbFile1 sharedFile,OutputStream output) throws IOException {
-    	return SMBStreamUtils.copyLarge(sharedFile, output, 0);
+    	return SmbFile1StreamUtils.copyLarge(sharedFile, output, 0);
     }
     
     /**
@@ -50,10 +50,10 @@ public class SMBStreamUtils {
 			sharedFile.connect(); 
 			LOG.info("连接成功."); 
 			//获得共享文件的输入流，以便进行读取
-			input = SMBStreamUtils.toBufferedInputStream(sharedFile.getInputStream(), sharedFile.getBufferSize());
+			input = SmbFile1StreamUtils.toBufferedInputStream(sharedFile.getInputStream(), sharedFile.getBufferSize());
 			try {
 				// 跳过已经存在的长度,实现断点续传  
-				SMBStreamUtils.skip(input, skipOffset);
+				SmbFile1StreamUtils.skip(input, skipOffset);
 			} catch (Exception e) {
 				LOG.error(ExceptionUtils.getStackTrace(e));
 				return -1;
@@ -96,8 +96,8 @@ public class SMBStreamUtils {
         }
     }
     
-    public static long copyLarge(InputStream input,SmbFile1 sharedFile) throws IOException {
-    	return SMBStreamUtils.copyLarge(input, sharedFile, 0);
+    public static long copyLarge(InputStream input, SmbFile1 sharedFile) throws IOException {
+    	return SmbFile1StreamUtils.copyLarge(input, sharedFile, 0);
     }
     
     
@@ -153,7 +153,7 @@ public class SMBStreamUtils {
 			LOG.info("连接成功.");
 			try {
 				// 跳过已经存在的长度,实现断点续传  
-				SMBStreamUtils.skip(input, skipOffset);
+				SmbFile1StreamUtils.skip(input, skipOffset);
 			} catch (Exception e) {
 				LOG.error(ExceptionUtils.getStackTrace(e));
 				return -1;
@@ -165,7 +165,7 @@ public class SMBStreamUtils {
 				sharedFile.createNewFile();
 			}
 			//获得共享文件的输出流，以便进行写入
-			output = SMBStreamUtils.toBufferedOutputStream(sharedFile.getOutputStream(), sharedFile.getBufferSize());
+			output = SmbFile1StreamUtils.toBufferedOutputStream(sharedFile.getOutputStream(), sharedFile.getBufferSize());
 			//进度监听
 			CopyStreamProcessListener listener = sharedFile.getCopyStreamProcessListener();
 			//分配缓存区;可能8M

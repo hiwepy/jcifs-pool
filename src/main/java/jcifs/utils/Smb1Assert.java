@@ -14,9 +14,9 @@ import org.slf4j.LoggerFactory;
 import jcifs.smb1.smb1.SmbFile;
 
 
-public class SMBExceptionUtils {
+public class Smb1Assert {
 
-	protected static Logger LOG = LoggerFactory.getLogger(SMBExceptionUtils.class);
+	protected static Logger LOG = LoggerFactory.getLogger(Smb1Assert.class);
 
 	/**
 	 * 追加内容的判断

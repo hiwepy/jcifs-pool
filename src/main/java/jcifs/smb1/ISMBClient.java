@@ -1,4 +1,4 @@
-package jcifs;
+package jcifs.smb1;
 
 import java.io.File;
 import java.io.InputStream;
@@ -6,7 +6,6 @@ import java.io.OutputStream;
 
 import javax.servlet.ServletResponse;
 
-import jcifs.smb1.SmbFile1;
 import jcifs.smb1.filter.Smb1FileFilter;
 import jcifs.smb1.smb1.SmbFile;
 

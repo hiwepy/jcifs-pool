@@ -1,4 +1,4 @@
-package jcifs.smb1;
+package jcifs.smb;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -15,29 +15,28 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import jcifs.smb1.filter.Smb1FileFilter;
-import jcifs.smb1.smb1.SmbFile;
-import jcifs.utils.SMBClientUtils;
+import jcifs.utils.Smb2FileUtils;
  
 /**
  * 基于ThreadLocal多线程对象复用的SMBClient共享文件资源服务客户端实现
  * @author 		： <a href="https://github.com/hiwepy">hiwepy</a>
  */
-public class SmbFile1ResourceClient implements ISMBClient{
+public class SmbFile2ResourceClient implements ISMBClient{
 	
-	private ThreadLocal<SmbFile1> clientThreadLocal = new ThreadLocal<SmbFile1>();  
-	private SmbFile1Builder clientBuilder;
+	private ThreadLocal<SmbFile2> clientThreadLocal = new ThreadLocal<SmbFile2>();  
+	private SmbFile2Builder clientBuilder;
 	
-	public SmbFile1ResourceClient(){
+	public SmbFile2ResourceClient(){
 	}
 	
-	public SmbFile1ResourceClient(SmbFile1Builder builder){
+	public SmbFile2ResourceClient(SmbFile2Builder builder){
 		 this.clientBuilder = builder;
 	}
 	
 	@Override
 	public boolean makeDir(String targetDir) throws Exception{
 		//获得一个SMBClient对象
-		SmbFile1 smbClient = getSMBClient();
+		SmbFile2 smbClient = getSMBClient();
 		try {
 			//当前目录
 			SmbFile currentDir = new SmbFile(smbClient,targetDir);
@@ -57,12 +56,12 @@ public class SmbFile1ResourceClient implements ISMBClient{
 	
 	public void downloadToDir(String sharedDir,File localDir) throws Exception{
 		//获得一个SMBClient对象
-		SmbFile1 smbClient = getSMBClient();
+		SmbFile2 smbClient = getSMBClient();
 		try {
 			//当前共享目录
-			SmbFile1 currentDir = new SmbFile1(smbClient, sharedDir.endsWith("/") ? sharedDir : sharedDir + "/");
+			SmbFile2 currentDir = new SmbFile2(smbClient, sharedDir.endsWith("/") ? sharedDir : sharedDir + "/");
 			//复制共享目录到指定的本地目录
-			SMBClientUtils.retrieveToDir(currentDir, localDir);
+			Smb2FileUtils.retrieveToDir(currentDir, localDir);
         } finally {
 			//释放对象  
 			releaseClient(smbClient);
@@ -72,12 +71,12 @@ public class SmbFile1ResourceClient implements ISMBClient{
 	@Override
 	public void downloadToFile(String filepath, File localFile) throws Exception {
 		//获得一个SMBClient对象
-		SmbFile1 smbClient = getSMBClient();
+		SmbFile2 smbClient = getSMBClient();
 		try {
 			//源文件
-			SmbFile1 smbFile = new SmbFile1( smbClient, filepath);
+			SmbFile2 smbFile = new SmbFile2( smbClient, filepath);
 			//下载共享文件至输出流
-			SMBClientUtils.retrieveToFile(smbFile, localFile);
+			Smb2FileUtils.retrieveToFile(smbFile, localFile);
         } finally {
         	//释放对象  
 			releaseClient(smbClient);
@@ -108,12 +107,12 @@ public class SmbFile1ResourceClient implements ISMBClient{
 	@Override
 	public void downloadToStream(String filepath,OutputStream output) throws Exception {
 		//获得一个SMBClient对象
-		SmbFile1 smbClient = getSMBClient();
+		SmbFile2 smbClient = getSMBClient();
 		try {
 			//源文件
-			SmbFile1 smbFile = new SmbFile1( smbClient, filepath);
+			SmbFile2 smbFile = new SmbFile2( smbClient, filepath);
 			//下载共享文件至输出流
-			SMBClientUtils.retrieveToStream(smbFile, output);
+			Smb2FileUtils.retrieveToStream(smbFile, output);
         } finally {
         	//释放对象  
 			releaseClient(smbClient);
@@ -130,12 +129,12 @@ public class SmbFile1ResourceClient implements ISMBClient{
 	@Override
 	public void downloadToResponse(String filepath,ServletResponse response) throws Exception {
 		//获得一个SMBClient对象
-		SmbFile1 smbClient = getSMBClient();
+		SmbFile2 smbClient = getSMBClient();
 		try {
 			//源文件
-			SmbFile1 smbFile = new SmbFile1( smbClient, filepath);
+			SmbFile2 smbFile = new SmbFile2( smbClient, filepath);
 			//下载共享文件至输出流
-			SMBClientUtils.retrieveToResponse(smbFile, response);
+			Smb2FileUtils.retrieveToResponse(smbFile, response);
         } finally {
         	//释放对象  
 			releaseClient(smbClient);
@@ -152,10 +151,10 @@ public class SmbFile1ResourceClient implements ISMBClient{
 	@Override
 	public SmbFile getFile(String filepath) throws Exception {
 		//获得一个SMBClient对象
-		SmbFile1 smbClient = getSMBClient();
+		SmbFile2 smbClient = getSMBClient();
 		try {
 			//源文件
-			return new SmbFile1( smbClient, filepath);
+			return new SmbFile2( smbClient, filepath);
         } finally {
         	//释放对象  
 			releaseClient(smbClient);
@@ -165,10 +164,10 @@ public class SmbFile1ResourceClient implements ISMBClient{
 	@Override
 	public SmbFile getFile(String sharedDir,String fileName) throws Exception {
 		//获得一个SMBClient对象
-		SmbFile1 smbClient = getSMBClient();
+		SmbFile2 smbClient = getSMBClient();
 		try { 
 			//源文件
-			return new SmbFile1( smbClient, sharedDir + "/" + fileName);
+			return new SmbFile2( smbClient, sharedDir + "/" + fileName);
 		} finally {
 			//释放对象  
 			releaseClient(smbClient);
@@ -178,9 +177,9 @@ public class SmbFile1ResourceClient implements ISMBClient{
 	@Override
 	public InputStream getInputStream(String filepath) throws Exception{
 		//获得一个SMBClient对象
-		SmbFile1 smbClient = getSMBClient();
+		SmbFile2 smbClient = getSMBClient();
 		try { 
-			return SMBClientUtils.getInputStream(smbClient, filepath);
+			return Smb2FileUtils.getInputStream(smbClient, filepath);
 		} finally {
 			//释放对象  
 			releaseClient(smbClient);
@@ -190,9 +189,9 @@ public class SmbFile1ResourceClient implements ISMBClient{
 	@Override
 	public String[] listNames(String sharedDir) throws Exception {
 		//获得一个SMBClient对象
-		SmbFile1 smbClient = getSMBClient();
+		SmbFile2 smbClient = getSMBClient();
 		try { 
-	        return SMBClientUtils.listNames(smbClient, sharedDir);
+	        return Smb2FileUtils.listNames(smbClient, sharedDir);
 		} finally {
 			//释放对象  
 			releaseClient(smbClient);
@@ -200,13 +199,13 @@ public class SmbFile1ResourceClient implements ISMBClient{
 	}
 
 	@Override
-	public SmbFile1[] listFiles(String sharedDir) throws Exception {
+	public SmbFile2[] listFiles(String sharedDir) throws Exception {
 		//获得一个SMBClient对象
-		SmbFile1 smbClient = getSMBClient();
+		SmbFile2 smbClient = getSMBClient();
 		try { 
 			//列出当前工作目录的文件信息
-			List<SmbFile1> list = SMBClientUtils.listFiles(smbClient, sharedDir);
-	        return list.toArray(new SmbFile1[list.size()] );
+			List<SmbFile2> list = Smb2FileUtils.listFiles(smbClient, sharedDir);
+	        return list.toArray(new SmbFile2[list.size()] );
 		} finally {
 			//释放对象  
 			releaseClient(smbClient);
@@ -214,13 +213,13 @@ public class SmbFile1ResourceClient implements ISMBClient{
 	}
 	
 	@Override
-	public SmbFile1[] listFiles(String sharedDir,boolean recursion) throws Exception {
+	public SmbFile2[] listFiles(String sharedDir,boolean recursion) throws Exception {
 		//获得一个SMBClient对象
-		SmbFile1 smbClient = getSMBClient();
+		SmbFile2 smbClient = getSMBClient();
 		try { 
 			//列出当前工作目录的文件信息
-			List<SmbFile1> list = SMBClientUtils.listFiles(smbClient, sharedDir, recursion);
-	        return list.toArray(new SmbFile1[list.size()] );
+			List<SmbFile2> list = Smb2FileUtils.listFiles(smbClient, sharedDir, recursion);
+	        return list.toArray(new SmbFile2[list.size()] );
 		} finally {
 			//释放对象  
 			releaseClient(smbClient);
@@ -228,13 +227,13 @@ public class SmbFile1ResourceClient implements ISMBClient{
 	}
 
 	@Override
-	public SmbFile1[] listFiles(String sharedDir, String[] extensions) throws Exception{
+	public SmbFile2[] listFiles(String sharedDir, String[] extensions) throws Exception{
 		//获得一个SMBClient对象
-		SmbFile1 smbClient = getSMBClient();
+		SmbFile2 smbClient = getSMBClient();
 		try { 
 			//列出当前工作目录的文件信息
-			List<SmbFile1> list = SMBClientUtils.listFiles(smbClient, sharedDir, extensions, false);
-	        return list.toArray(new SmbFile1[list.size()] );
+			List<SmbFile2> list = Smb2FileUtils.listFiles(smbClient, sharedDir, extensions, false);
+	        return list.toArray(new SmbFile2[list.size()] );
 		} finally {
 			//释放对象  
 			releaseClient(smbClient);
@@ -242,13 +241,13 @@ public class SmbFile1ResourceClient implements ISMBClient{
 	}
 	
 	@Override
-	public SmbFile1[] listFiles(String sharedDir, String[] extensions,boolean recursion) throws Exception{
+	public SmbFile2[] listFiles(String sharedDir, String[] extensions,boolean recursion) throws Exception{
 		//获得一个SMBClient对象
-		SmbFile1 smbClient = getSMBClient();
+		SmbFile2 smbClient = getSMBClient();
 		try { 
 			//列出当前工作目录的文件信息
-			List<SmbFile1> list = SMBClientUtils.listFiles(smbClient, sharedDir, extensions , recursion);
-	        return list.toArray(new SmbFile1[list.size()] );
+			List<SmbFile2> list = Smb2FileUtils.listFiles(smbClient, sharedDir, extensions , recursion);
+	        return list.toArray(new SmbFile2[list.size()] );
 		} finally {
 			//释放对象  
 			releaseClient(smbClient);
@@ -256,13 +255,13 @@ public class SmbFile1ResourceClient implements ISMBClient{
 	}
 	
 	@Override
-	public SmbFile1[] listFiles(String sharedDir, Smb1FileFilter filter) throws Exception{
+	public SmbFile2[] listFiles(String sharedDir, Smb1FileFilter filter) throws Exception{
 		//获得一个SMBClient对象
-		SmbFile1 smbClient = getSMBClient();
+		SmbFile2 smbClient = getSMBClient();
 		try { 
 			//列出当前工作目录的文件信息
-			List<SmbFile1> list = SMBClientUtils.listFiles(smbClient, sharedDir, filter , false );
-	        return list.toArray(new SmbFile1[list.size()] );
+			List<SmbFile2> list = Smb2FileUtils.listFiles(smbClient, sharedDir, filter , false );
+	        return list.toArray(new SmbFile2[list.size()] );
 		} finally {
 			//释放对象  
 			releaseClient(smbClient);
@@ -270,13 +269,13 @@ public class SmbFile1ResourceClient implements ISMBClient{
 	}
 		
 	@Override
-	public SmbFile1[] listFiles(String sharedDir, Smb1FileFilter filter,boolean recursion) throws Exception{
+	public SmbFile2[] listFiles(String sharedDir, Smb1FileFilter filter,boolean recursion) throws Exception{
 		//获得一个SMBClient对象
-		SmbFile1 smbClient = getSMBClient();
+		SmbFile2 smbClient = getSMBClient();
 		try { 
 			//列出当前工作目录的文件信息
-			List<SmbFile1> list = SMBClientUtils.listFiles(smbClient, sharedDir, filter , recursion);
-	        return list.toArray(new SmbFile1[list.size()] );
+			List<SmbFile2> list = Smb2FileUtils.listFiles(smbClient, sharedDir, filter , recursion);
+	        return list.toArray(new SmbFile2[list.size()] );
 		} finally {
 			//释放对象  
 			releaseClient(smbClient);
@@ -286,9 +285,9 @@ public class SmbFile1ResourceClient implements ISMBClient{
 	@Override
 	public boolean remove(String filepath) throws Exception {
 		//获得一个SMBClient对象
-		SmbFile1 smbClient = getSMBClient();
+		SmbFile2 smbClient = getSMBClient();
 		try { 
-			return SMBClientUtils.remove(smbClient, filepath);
+			return Smb2FileUtils.remove(smbClient, filepath);
 		} finally {
 			//释放对象  
 			releaseClient(smbClient);
@@ -298,9 +297,9 @@ public class SmbFile1ResourceClient implements ISMBClient{
 	@Override
 	public boolean remove(String[] filepaths) throws Exception{
 		//获得一个SMBClient对象
-		SmbFile1 smbClient = getSMBClient();
+		SmbFile2 smbClient = getSMBClient();
 		try { 
-	        return SMBClientUtils.remove(smbClient, filepaths);
+	        return Smb2FileUtils.remove(smbClient, filepaths);
 		} finally {
 			//释放对象  
 			releaseClient(smbClient);
@@ -310,12 +309,12 @@ public class SmbFile1ResourceClient implements ISMBClient{
 	@Override
 	public boolean remove(String sharedDir, String fileName) throws Exception {
 		//获得一个SMBClient对象
-		SmbFile1 smbClient = getSMBClient();
+		SmbFile2 smbClient = getSMBClient();
 		try { 
 			//当前共享目录
-			SmbFile1 currentDir = new SmbFile1(smbClient,sharedDir);
+			SmbFile2 currentDir = new SmbFile2(smbClient,sharedDir);
 			//删除【共享文件】服务器上的一个指定文件
-			return SMBClientUtils.remove(currentDir, fileName);
+			return Smb2FileUtils.remove(currentDir, fileName);
 		} finally {
 			//释放对象  
 			releaseClient(smbClient);
@@ -325,12 +324,12 @@ public class SmbFile1ResourceClient implements ISMBClient{
 	@Override
 	public boolean remove(String sharedDir, String[] fileNames) throws Exception {
 		//获得一个SMBClient对象
-		SmbFile1 smbClient = getSMBClient();
+		SmbFile2 smbClient = getSMBClient();
 		try { 
 			//当前共享目录
-			SmbFile1 currentDir = new SmbFile1(smbClient,sharedDir);
+			SmbFile2 currentDir = new SmbFile2(smbClient,sharedDir);
 			//删除【共享文件】服务器上的多个指定文件
-			return SMBClientUtils.remove(currentDir, fileNames);
+			return Smb2FileUtils.remove(currentDir, fileNames);
 		} finally {
 			//释放对象  
 			releaseClient(smbClient);
@@ -340,9 +339,9 @@ public class SmbFile1ResourceClient implements ISMBClient{
 	@Override
 	public boolean removeDir(String sharedDir) throws Exception {
 		//获得一个SMBClient对象
-		SmbFile1 smbClient = getSMBClient();
+		SmbFile2 smbClient = getSMBClient();
 		try { 
-			return SMBClientUtils.removeDir(smbClient, sharedDir);
+			return Smb2FileUtils.removeDir(smbClient, sharedDir);
 		} finally {
 			//释放对象  
 			releaseClient(smbClient);
@@ -351,9 +350,9 @@ public class SmbFile1ResourceClient implements ISMBClient{
 
 	public boolean rename(String filepath,String fileName) throws Exception{
 		//获得一个SMBClient对象
-		SmbFile1 smbClient = getSMBClient();
+		SmbFile2 smbClient = getSMBClient();
 		try { 
-			return SMBClientUtils.rename(smbClient, filepath, fileName);
+			return Smb2FileUtils.rename(smbClient, filepath, fileName);
 		} finally {
 			//释放对象  
 			releaseClient(smbClient);
@@ -362,9 +361,9 @@ public class SmbFile1ResourceClient implements ISMBClient{
 	
 	public boolean renameTo(String filepath,String destpath) throws Exception{
 		//获得一个SMBClient对象
-		SmbFile1 smbClient = getSMBClient();
+		SmbFile2 smbClient = getSMBClient();
 		try { 
-			return SMBClientUtils.renameTo(smbClient, filepath, destpath);
+			return Smb2FileUtils.renameTo(smbClient, filepath, destpath);
 		} finally {
 			//释放对象  
 			releaseClient(smbClient);
@@ -394,12 +393,12 @@ public class SmbFile1ResourceClient implements ISMBClient{
 	@Override
 	public boolean upload(File localFile,String destpath) throws Exception {
 		//获得一个SMBClient对象
-		SmbFile1 smbClient = getSMBClient();
+		SmbFile2 smbClient = getSMBClient();
 		try {
 			//目标文件
-			SmbFile1 sharedFile = new SmbFile1(smbClient,destpath);
+			SmbFile2 sharedFile = new SmbFile2(smbClient,destpath);
 			//存储本地文件到【文件共享服务器】
-			return SMBClientUtils.storeFile(localFile , sharedFile);
+			return Smb2FileUtils.storeFile(localFile , sharedFile);
         } finally {
         	//释放对象  
 			releaseClient(smbClient);
@@ -409,12 +408,12 @@ public class SmbFile1ResourceClient implements ISMBClient{
 	@Override
 	public boolean upload(File localFile,String sharedDir,String fileName) throws Exception {
 		//获得一个SMBClient对象
-		SmbFile1 smbClient = getSMBClient();
+		SmbFile2 smbClient = getSMBClient();
 		try {
 			//解析共享文件路径
 			String destpath = FilenameUtils.getFullPath(sharedDir + "/" + fileName) + fileName;
 			//存储本地文件到【文件共享服务器】
-			return SMBClientUtils.storeFile(localFile, smbClient, destpath, true);
+			return Smb2FileUtils.storeFile(localFile, smbClient, destpath, true);
         } finally {
         	//释放对象  
 			releaseClient(smbClient);
@@ -424,9 +423,9 @@ public class SmbFile1ResourceClient implements ISMBClient{
 	@Override
 	public boolean upload(InputStream input,String destpath) throws Exception {
 		//获得一个SMBClient对象
-		SmbFile1 smbClient = getSMBClient();
+		SmbFile2 smbClient = getSMBClient();
 		try {
-			return SMBClientUtils.storeStream(input ,smbClient, destpath);
+			return Smb2FileUtils.storeStream(input ,smbClient, destpath);
         } finally {
         	//释放对象  
 			releaseClient(smbClient);
@@ -474,9 +473,9 @@ public class SmbFile1ResourceClient implements ISMBClient{
 	@Override
 	public boolean uploadByChannel(File localFile,String destpath) throws Exception{
 		//获得一个SMBClient对象
-		SmbFile1 smbClient = getSMBClient();
+		SmbFile2 smbClient = getSMBClient();
 		try {
-			return SMBClientUtils.storeFileChannel(localFile ,smbClient, destpath);
+			return Smb2FileUtils.storeFileChannel(localFile ,smbClient, destpath);
         } finally {
         	//释放对象  
 			releaseClient(smbClient);
@@ -492,7 +491,7 @@ public class SmbFile1ResourceClient implements ISMBClient{
 	}
 	
 	@Override
-	public SmbFile1 getSMBClient() throws Exception {
+	public SmbFile2 getSMBClient() throws Exception {
 		if (clientBuilder == null) {
 			throw new IllegalArgumentException("clientBuilder is null.");
 		}
@@ -500,7 +499,7 @@ public class SmbFile1ResourceClient implements ISMBClient{
             return clientThreadLocal.get();  
         } else {
         	//构造一个SMBClient实例  
-        	SmbFile1 smbClient = getClientBuilder().build();
+        	SmbFile2 smbClient = getClientBuilder().build();
         	//尝试连接 ;SmbFile的connect()方法可以尝试连接远程文件夹，如果账号或密码错误，将抛出连接异常
         	smbClient.connect(); 
     		clientThreadLocal.set(smbClient);
@@ -509,16 +508,16 @@ public class SmbFile1ResourceClient implements ISMBClient{
 	}
  
 	@Override
-	public void releaseClient(SmbFile1 smbClient) throws Exception{
+	public void releaseClient(SmbFile2 smbClient) throws Exception{
 		//断开连接  
 		//SMBConnectUtils.releaseConnect(smbClient);
 	}
 
-	public void setClientBuilder(SmbFile1Builder clientBuilder) {
+	public void setClientBuilder(SmbFile2Builder clientBuilder) {
 		this.clientBuilder = clientBuilder;
 	}
 
-	public SmbFile1Builder getClientBuilder() {
+	public SmbFile2Builder getClientBuilder() {
 		return clientBuilder;
 	}
 	

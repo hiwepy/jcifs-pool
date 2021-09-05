@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jcifs.SmbTransportPool;
+import jcifs.context.BaseContext;
 import jcifs.io.CopyStreamProcessListener;
 import jcifs.netbios.UniAddress;
 import jcifs.smb1.smb1.NtlmPasswordAuthentication;
@@ -22,12 +23,8 @@ import jcifs.utils.SMBPathUtils;
 public class SmbFile2Builder implements Builder<SmbFile2> {
 	
 	protected static Logger LOG = LoggerFactory.getLogger(SmbFile2Builder.class);
-	private SmbFile2Config clientConfig;
-	
-	public SmbFile2Builder(SmbFile2Config config) {
-		this.clientConfig = config;
-	}
-
+	private BaseContext context;
+	 
 	@SuppressWarnings("unchecked")
 	public SmbFile2 build() {
 		

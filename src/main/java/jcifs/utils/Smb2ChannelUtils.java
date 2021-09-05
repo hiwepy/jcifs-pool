@@ -9,11 +9,11 @@ import java.nio.channels.FileChannel;
 import org.apache.commons.io.IOUtils;
 
 import jcifs.io.CopyStreamProcessListener;
-import jcifs.smb1.SmbFile1;
+import jcifs.smb.SmbFile2;
 
-public class SMBChannelUtils extends SmbFile1StreamUtils {
+public class Smb2ChannelUtils extends SmbFile2StreamUtils {
     
-	public static boolean copyLarge(FileChannel inChannel,OutputStream output, SmbFile1 sharedFile) throws IOException{
+	public static boolean copyLarge(FileChannel inChannel,OutputStream output, SmbFile2 sharedFile) throws IOException{
 		ByteBuffer byteBuffer = null;
 		try {
 			//进度监听
@@ -72,7 +72,7 @@ public class SMBChannelUtils extends SmbFile1StreamUtils {
         }
 	} 
 	
-	public static boolean copyLarge(InputStream input,FileChannel outChannel,SmbFile1 sharedFile) throws IOException{
+	public static boolean copyLarge(InputStream input,FileChannel outChannel, SmbFile2 sharedFile) throws IOException{
 		ByteBuffer 	 byteBuffer = null;
 		try {
 			//通过调用position()方法跳过已经存在的长度
